@@ -8,4 +8,6 @@ Gem::Specification.new do |s|
   s.email       = 'andrew@andrewjamesjohnson.com'
   s.files       = ["lib/gnome-wallpaper-slideshow.rb"]
   s.homepage    = 'https://github.com/ajsquared/gnome-wallpaper-slideshow'
+  
+  s.add_dependency 'nokogiri', '>=1.5.6'
 end
