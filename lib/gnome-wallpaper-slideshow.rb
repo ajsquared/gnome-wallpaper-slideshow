@@ -25,34 +25,42 @@ class GnomeWallpaperSlideshow
     load_slideshow_xml
   end
 
-  # Sets the start time of the slideshow
+  # Gets or sets the start time of the slideshow
   # @param [Time] time The start time for the slideshow
   # @return The current start time if one is not given
   def start_time(time = nil)
-    return @start_time if time == nil
+    return @start_time unless time
 
     @start_time = time
   end
 
-  # Sets the path of the slideshow XML file
+  # Gets or sets the path of the slideshow XML file
   # @param [String] filename The path to the new location of the XML file
   # @return The current path if one is not given
   def path(filename = nil)
-    return @path if time == nil
+    return @path unless path
 
     @path = Pathname.new filename
   end
 
   # Gets the list of wallpapers in this slideshow
   # @return The list of wallpapers in the slideshow, or the empty list if none exist
-  def wallpapers
-    @wallpapers = @wallpapers || []
+  def wallpapers(wallpaper_list)
+    return @wallpapers = @wallpapers || []
   end
 
   # Adds a new wallpaper to the slideshow
   # @param [GnomeWallpaperSlideshow::Wallpaper] wallpaper The wallpaper to add
   def add_wallpaper(wallpaper)
     wallpapers << wallpaper
+  end
+
+  # Removes a wallpaper from the slideshow
+  # @param [String] filename The filename of the wallpaper to remove
+  def remove_wallpaper(filename)
+    wallpapers.delete_if do |wallpaper|
+      wallpaper.filename == filename
+    end
   end
 
   private
