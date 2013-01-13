@@ -7,7 +7,7 @@ require 'pathname'
 class GnomeWallpaperSlideshow
   # Create a new GnomeWallpaperSlideshow
   def initialize(&block)
-    instance_eval(&block)
+    instance_eval(&block) if block_given?
   end
 
   # Creates a new wallpaper slideshow
@@ -69,8 +69,11 @@ class GnomeWallpaperSlideshow
 
   # Generates and saves the slideshow XML to the current @path
   def save_xml
+    return "" if start_time.nil? or wallpapers.none?
+    
     builder = Nokogiri::XML::Builder.new do |xml|
       xml.background {
+        # The start time comes first
         xml.starttime {
           xml.year start_time.year
           xml.month start_time.month
@@ -79,11 +82,14 @@ class GnomeWallpaperSlideshow
           xml.minute start_time.min
           xml.second start_time.sec
         }
+        # Transitions are in pairs of wallpapers
         wallpapers.each_cons(2) do |transition|
+          # The static tag defines a wallpaper and how long it is displayed
           xml.static {
             xml.duration transition.first.duration
             xml.file transition.first.filename
           }
+          # The transition tag defines how long the transition between this and the next takes
           xml.transition {
             xml.duration transition.first.transition_time
             xml.from transition.first.filename
