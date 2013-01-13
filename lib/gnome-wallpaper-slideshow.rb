@@ -102,9 +102,19 @@ class GnomeWallpaperSlideshow
         }
       }
     end
+
+    write_xml builder.to_xml
   end
 
   private
+
+  # Writes an XML string to a file
+  # @param [String] xml_string The XML to write out
+  def write_xml(xml_string)
+    File.open(self.path, "w") do |slideshow_file|
+      slideshow_file.write xml_string
+    end
+  end
 
   # Loads a wallpaper slideshow XML file
   def load_slideshow_xml
