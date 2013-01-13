@@ -1,0 +1,41 @@
+# -*- mode: RUBY -*-
+#!/usr/bin/env ruby
+
+require 'gnome-wallpaper-slideshow'
+require 'gnome-wallpaper-slideshow/wallpaper'
+
+DEFAULT_EXTENSIONS = "jpg,png,jpeg"
+
+# Gets the absolute path to a file
+# @param [String] file The file for which to construct the absolute path
+# @return [String] The absolute path of the given file
+def get_absolute_path(file)
+  File.expand_path file
+end
+
+
+if ARGV.length < 3
+  puts "You must specify four arguments: the image directory, the time to display each image in seconds, the transition time in seconds, and the output filename."
+  puts "You may optionally specify a fifth argument: the list of file extensions to include.  If omitted, it will default to #{DEFAULT_EXTENSIONS}"
+  exit 1
+end
+
+image_directory = get_absolute_path(ARGV[0])
+time = ARGV[1]
+transition_time = ARGV[2]
+output_filename = ARGV[3]
+extensions = ARGV[4] || DEFAULT_EXTENSIONS
+
+wallpapers = Dir.glob("#{image_directory}/*.{#{extensions}}").map do |file|
+  GnomeWallpaperSlideshow::Wallpaper.new get_absolute_path(file), time, transition_time
+end
+
+slideshow = GnomeWallpaperSlideshow.new do
+  create_new_slideshow output_filename
+  start_time Time.now
+  wallpapers.each do |wallpaper|
+    add_wallpaper wallpaper
+  end
+end
+
+slideshow.save_xml

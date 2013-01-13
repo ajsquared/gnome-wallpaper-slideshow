@@ -1,7 +1,8 @@
 Gem::Specification.new do |s|
   s.name        = 'gnome-wallpaper-slideshow'
-  s.version     = '0.2'
+  s.version     = '0.3'
   s.date        = '2012-01-13'
+  s.executables << 'slideshow'
   s.summary     = "Gnome Wallpaper Slideshow"
   s.description = "A gem for creating and interacting with the XML files that define wallpaper slideshows in GNOME"
   s.authors     = ["Andrew Johnson"]
