@@ -1,5 +1,5 @@
-# -*- mode: RUBY -*-
 #!/usr/bin/env ruby
+# -*- mode: RUBY -*-
 
 require 'gnome-wallpaper-slideshow'
 require 'gnome-wallpaper-slideshow/wallpaper'

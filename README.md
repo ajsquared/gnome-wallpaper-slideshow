@@ -18,3 +18,11 @@ slideshows.
 ## Installation ##
 
     gem install gnome-wallpaper-slideshow
+
+## Sample Program ##
+
+gnome-wallpaper-slideshow is distributed with a sample application
+called create-slideshow.  This script takes the name of a directory
+containing image files, the amount of time to display each image, the
+transition time, and an output filename and produces a slideshow XML
+file.
