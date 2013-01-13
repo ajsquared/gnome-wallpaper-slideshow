@@ -23,6 +23,10 @@ class GnomeWallpaperSlideshow
   def load_slideshow(filename)
     @path = Pathname.new filename
     load_slideshow_xml
+
+    # Load the content from the XML doc
+    load_start_time
+    load_wallpapers
   end
 
   # Gets or sets the start time of the slideshow
@@ -38,14 +42,14 @@ class GnomeWallpaperSlideshow
   # @param [String] filename The path to the new location of the XML file
   # @return The current path if one is not given
   def path(filename = nil)
-    return @path unless path
+    return @path unless filename
 
     @path = Pathname.new filename
   end
 
   # Gets the list of wallpapers in this slideshow
   # @return The list of wallpapers in the slideshow, or the empty list if none exist
-  def wallpapers(wallpaper_list)
+  def wallpapers()
     return @wallpapers = @wallpapers || []
   end
 
@@ -73,6 +77,43 @@ class GnomeWallpaperSlideshow
         config.strict
       end
     end
+  end
+
+  # Loads the start time from the XML file
+  def load_start_time
+    year = starttime_xpath_query "year"
+    month = starttime_xpath_query "month"
+    day = starttime_xpath_query "day"
+    hour = starttime_xpath_query "hour"
+    minute = starttime_xpath_query "minute"
+    second = starttime_xpath_query "second"
+
+    start_time Time.local year, month, day, hour, minute, second
+  end
+
+  # Load the wallpapers and transitions from the XML file
+  def load_wallpapers
+    files = wallpaper_xpath_query "//static/file"
+    durations = wallpaper_xpath_query "//static/duration"
+    transitions = wallpaper_xpath_query "//transition/duration"
+
+    @wallpapers = files.zip(durations,transitions).map do |file, duration, transition|
+      GnomeWallpaperSlideshow::Wallpaper.new file, duration, transition
+    end
+  end
+
+  # Performs an XPath query for wallpapers
+  # @param [String] query The XPath query to perform
+  def wallpaper_xpath_query(query)
+    @xml_doc.xpath(query).children.map do |child|
+      child.content
+    end
+  end
+
+  # Performs an XPath query for an element of the starttime
+  # @param [String] field The starttime field to extract
+  def starttime_xpath_query(field)
+    @xml_doc.at_xpath("//starttime/#{field}").children.first.content
   end
 end
 
