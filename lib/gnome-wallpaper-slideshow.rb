@@ -49,7 +49,7 @@ class GnomeWallpaperSlideshow
 
   # Gets the list of wallpapers in this slideshow
   # @return The list of wallpapers in the slideshow, or the empty list if none exist
-  def wallpapers()
+  def wallpapers
     return @wallpapers = @wallpapers || []
   end
 
@@ -64,6 +64,43 @@ class GnomeWallpaperSlideshow
   def remove_wallpaper(filename)
     wallpapers.delete_if do |wallpaper|
       wallpaper.filename == filename
+    end
+  end
+
+  # Generates and saves the slideshow XML to the current @path
+  def save_xml
+    builder = Nokogiri::XML::Builder.new do |xml|
+      xml.background {
+        xml.starttime {
+          xml.year start_time.year
+          xml.month start_time.month
+          xml.day start_time.day
+          xml.hour start_time.hour
+          xml.minute start_time.min
+          xml.second start_time.sec
+        }
+        wallpapers.each_cons(2) do |transition|
+          xml.static {
+            xml.duration transition.first.duration
+            xml.file transition.first.filename
+          }
+          xml.transition {
+            xml.duration transition.first.transition_time
+            xml.from transition.first.filename
+            xml.to transition.last.filename
+          }
+        end
+        # Now insert the last wallpaper and the transition back to the beginning
+        xml.static {
+          xml.duration wallpapers.last.duration
+          xml.file wallpapers.last.filename
+        }
+        xml.transition {
+          xml.duration wallpapers.last.transition_time
+          xml.from wallpapers.last.filename
+          xml.to wallpapers.first.filename
+        }
+      }
     end
   end
 
