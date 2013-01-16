@@ -26,3 +26,8 @@ called create-slideshow.  This script takes the name of a directory
 containing image files, the amount of time to display each image, the
 transition time, and an output filename and produces a slideshow XML
 file.
+
+## License ##
+
+gnome-wallpaper-slideshow is MIT licensed.  See LICENSE.txt for
+details.
