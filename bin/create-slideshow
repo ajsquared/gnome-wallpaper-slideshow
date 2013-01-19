@@ -37,6 +37,15 @@ optparse = OptionParser.new do |opts|
   opts.on('-e', '--extensions EXTENSIONS', "comma-separated list of file extensions, defaults to #{DEFAULT_EXTENSIONS}") do |sender|
     options[:ext] = sender
   end
+
+  opts.on('-s', '--shuffle', 'Randomly shuffle the order of the wallpapers') do |sender|
+    options[:shuffle] = sender
+  end
+
+  opts.on_tail('-h', '--help', 'Show this message') do
+    puts opts
+    exit
+  end
 end
 
 # Ensure mandatory arguments are present
@@ -67,6 +76,11 @@ extensions = options[:ext] || DEFAULT_EXTENSIONS
 
 wallpapers = Dir.glob("#{image_directory}/*.{#{extensions}}").map do |file|
   GnomeWallpaperSlideshow::Wallpaper.new get_absolute_path(file), time, transition_time
+end
+
+# Randomly shuffle the wallpapers if requested
+if options[:shuffle]
+  wallpapers.shuffle!
 end
 
 slideshow = GnomeWallpaperSlideshow.new do
