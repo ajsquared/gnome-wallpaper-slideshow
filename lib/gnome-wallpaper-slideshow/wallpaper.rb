@@ -12,4 +12,8 @@ class GnomeWallpaperSlideshow::Wallpaper
     @duration = duration
     @transition_time = transition_time
   end
+
+  def ==(other)
+      (self.filename == other.filename) && (self.duration == other.duration) && (self.transition_time == other.transition_time)
+  end
 end
