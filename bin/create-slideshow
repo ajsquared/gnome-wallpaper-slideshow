@@ -3,6 +3,7 @@
 
 require 'gnome-wallpaper-slideshow'
 require 'gnome-wallpaper-slideshow/wallpaper'
+require 'optparse'
 
 DEFAULT_EXTENSIONS = "jpg,png,jpeg"
 
@@ -13,18 +14,56 @@ def get_absolute_path(file)
   File.expand_path file
 end
 
+# Parse command-line options
+options = {}
 
-if ARGV.length < 3
-  puts "You must specify four arguments: the image directory, the time to display each image in seconds, the transition time in seconds, and the output filename."
-  puts "You may optionally specify a fifth argument: the list of file extensions to include.  If omitted, it will default to #{DEFAULT_EXTENSIONS}"
-  exit 1
+optparse = OptionParser.new do |opts|
+  opts.on('-d', '--dir DIRECTORY', 'directory containing image files') do |sender|
+    options[:dir] = sender
+  end
+
+  opts.on('-t', '--time DURATION', 'amount of time to display each wallpaper in seconds') do |sender|
+    options[:duration] = sender
+  end
+
+  opts.on('-r', '--transition DURATION', 'transition time between wallpapers in seconds') do |sender|
+    options[:transition] = sender
+  end
+
+  opts.on('-f', '--filename FILENAME', 'output filename') do |sender|
+    options[:file] = sender
+  end
+
+  opts.on('-e', '--extensions EXTENSIONS', "comma-separated list of file extensions, defaults to #{DEFAULT_EXTENSIONS}") do |sender|
+    options[:ext] = sender
+  end
 end
 
-image_directory = get_absolute_path(ARGV[0])
-time = ARGV[1]
-transition_time = ARGV[2]
-output_filename = ARGV[3]
-extensions = ARGV[4] || DEFAULT_EXTENSIONS
+# Ensure mandatory arguments are present
+begin
+  optparse.parse!
+  mandatory = [:dir, :duration, :transition, :file]
+
+  missing = mandatory.select do |param|
+    options[param].nil?
+  end
+
+  if not missing.empty?
+    puts "Missing options: #{missing.join(', ')}"
+    puts optparse
+    exit
+  end
+rescue OptionParser::InvalidOption, OptionParser::MissingArgument
+  puts $!.to_s
+  puts optparse
+  exit
+end
+
+image_directory = options[:dir]
+time = options[:duration]
+transition_time = options[:transition]
+output_filename = options[:file]
+extensions = options[:ext] || DEFAULT_EXTENSIONS
 
 wallpapers = Dir.glob("#{image_directory}/*.{#{extensions}}").map do |file|
   GnomeWallpaperSlideshow::Wallpaper.new get_absolute_path(file), time, transition_time
